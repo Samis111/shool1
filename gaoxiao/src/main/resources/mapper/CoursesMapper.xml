@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shool.mapper.CoursesMapper">
+
+    <resultMap id="BaseResultMap" type="com.shool.domain.Courses">
+            <id property="courseId" column="course_id" jdbcType="INTEGER"/>
+            <result property="courseName" column="course_name" jdbcType="VARCHAR"/>
+            <result property="credits" column="credits" jdbcType="INTEGER"/>
+            <result property="teacher" column="teacher" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        course_id,course_name,credits,
+        teacher
+    </sql>
+</mapper>

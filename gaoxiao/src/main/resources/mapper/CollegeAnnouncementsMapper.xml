@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shool.mapper.CollegeAnnouncementsMapper">
+
+    <resultMap id="BaseResultMap" type="com.shool.domain.CollegeAnnouncements">
+            <id property="announcementId" column="announcement_id" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="publishDate" column="publish_date" jdbcType="TIMESTAMP"/>
+            <result property="adminId" column="admin_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        announcement_id,title,content,
+        publish_date,admin_id
+    </sql>
+</mapper>

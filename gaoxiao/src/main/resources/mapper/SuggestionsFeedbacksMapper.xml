@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shool.mapper.SuggestionsFeedbacksMapper">
+
+    <resultMap id="BaseResultMap" type="com.shool.domain.SuggestionsFeedbacks">
+            <id property="feedbackId" column="feedback_id" jdbcType="INTEGER"/>
+            <result property="studentId" column="student_id" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="submitDate" column="submit_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        feedback_id,student_id,content,
+        submit_date
+    </sql>
+</mapper>
