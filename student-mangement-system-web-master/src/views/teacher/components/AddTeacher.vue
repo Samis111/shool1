@@ -12,7 +12,12 @@
       <el-col :span="12">
         <el-form-item prop="gradeClass" label="类型">
           <el-select v-model="formTeacher.course.eventType" placeholder="请选择类型" style="width: 100%;">
-            <el-option v-for="item in addtype" :key="item.name" :label="item.name" :value="item.name" />
+            <el-option 
+              v-for="item in addtype" 
+              :key="item.value" 
+              :label="item.label" 
+              :value="item.value" 
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -37,28 +42,75 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { addTeacherApi, getAllCourseListApi } from "../../../api/teacher/teacher";
 import type { FormInstance, FormRules } from 'element-plus'
+
+// 定义学生信息接口
+interface Student {
+  studentId: number
+  studentName: string
+  // ... 其他学生相关字段
+}
+
+// 定义事件类型接口
+interface EventType {
+  value: string
+  label: string
+}
+
+// 定义表单数据接口
+interface TeacherForm {
+  name: string
+  teachno: string
+  sex: string
+  phone: string
+  course: {
+    id: string
+    studentId?: number
+    eventType?: string
+  }
+  qq: string
+  remarks: string
+  eventDescription?: string
+}
+
 const ruleFormRef = ref<FormInstance>()
 const subLoading = ref(false)
-const formTeacher = reactive({
+
+// 使用类型定义
+const formTeacher = reactive<TeacherForm>({
   name: '',
   teachno: '',
   sex: '',
   phone: '',
   course: {
-    id: ''
+    id: '',
+    studentId: undefined,
+    eventType: undefined
   },
   qq: '',
-  remarks: ''
+  remarks: '',
+  eventDescription: ''
 })
 
-const addtype = reactive({
-  name: '奖励'
-},
-  {
-    name: '惩罚'
-  }
+// 使用类型定义
+const addtype = ref<EventType[]>([
+  { value: '奖励', label: '奖励' },
+  { value: '惩罚', label: '惩罚' }
+])
 
-)
+// 使用类型定义
+const courseOptions = ref<Student[]>([])
+
+// 获取所有课程列表
+async function getAllCourseList() {
+  try {
+    const { data } = await getAllCourseListApi()
+    if (data.code === 200) {
+      courseOptions.value = data.result
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 // 定义表单约束规则对象
 const rules = reactive<FormRules>({
@@ -69,6 +121,7 @@ const rules = reactive<FormRules>({
   course: [{ required: true, message: '教授科目不能为空', trigger: 'blur' }],
   teachno: [{ required: true, message: '教师工号不能为空', trigger: 'blur' }],
 })
+
 // 新增教师信息
 const addTeacher = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -90,20 +143,6 @@ const addTeacher = async (formEl: FormInstance | undefined) => {
   })
 }
 
-// 定义课程下拉选择项
-const courseOptions = ref<object[]>([])
-// 获取所有课程列表
-async function getAllCourseList() {
-  try {
-    const { data } = await getAllCourseListApi()
-    if (data.code === 200) {
-      
-      courseOptions.value = data.result
-    }
-  } catch (e) {
-    console.log(e)
-  }
-}
 getAllCourseList()
 const emit = defineEmits(['closeAddTeacherForm', 'success'])
 // 取消表单

@@ -32,7 +32,18 @@
           </el-radio-group>
         </el-form-item>
       </el-col>
-
+      <el-col :span="12">
+        <el-form-item label="学院" prop="college">
+          <el-select v-model="formUser.college" placeholder="请选择学院" clearable>
+            <el-option
+              v-for="item in collegeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
     </el-row>
   </el-form>
 
@@ -43,13 +54,18 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { addUserApi, editUserApi, getAllRoleListApi } from "../../../api/user/user"
+import { getRoleListApi } from "../../../api/role/role"
 import type { FormInstance, FormRules } from 'element-plus'
+
 const emit = defineEmits(['closeEditUserForm', 'success'])
 
-const props = defineProps(['userInfo'])
+const props = defineProps<{
+  userInfo: any
+}>()
+
 const userInfo = ref(props.userInfo)
 
 const subLoading = ref(false)
@@ -65,7 +81,8 @@ const formUser = reactive({
   remarks: '',
   sysRole: {
     id: ''
-  }
+  },
+  college: '',
 })
 
 console.log(userInfo)
@@ -74,13 +91,44 @@ console.log(userInfo)
 for (const key in formUser) {
   formUser[key] = userInfo.value[key]
 }
+
+// 替换静态学院选项为动态获取
+const collegeOptions = ref<Array<{value: string, label: string}>>([])
+
+// 获取学院列表
+const getCollegeList = async () => {
+  try {
+    const { data } = await getRoleListApi({
+      pageIndex: 1,
+      pageSize: 100, // 设置较大的数值以获取所有学院
+      searchValue: ''
+    })
+    if (data.code === 200) {
+      collegeOptions.value = data.data.records.map(item => ({
+        value: item.departmentName,
+        label: item.departmentName
+      }))
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+onMounted(() => {
+  getCollegeList()
+  if (props.userInfo) {
+    formUser.college = props.userInfo.college
+  }
+})
+
 // 定义表单约束规则对象
 const rules = reactive<FormRules>({
   username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
   password: [{ required: true, message: '登录密码不能为空', trigger: 'blur' }],
   realname: [{ required: true, message: '真实姓名不能为空', trigger: 'blur' }],
   sysRole: [{ required: true, message: '角色不能为空', trigger: 'blur' }],
-  email: [{ required: true, message: '邮箱不能为空', trigger: 'blur' }]
+  email: [{ required: true, message: '邮箱不能为空', trigger: 'blur' }],
+  college: [{ required: true, message: '请选择学院', trigger: 'change' }]
 })
 
 // 编辑用户信息

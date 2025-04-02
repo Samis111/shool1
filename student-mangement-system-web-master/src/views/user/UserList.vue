@@ -13,7 +13,7 @@
         <div class="card-search">
           <el-row :gutter="10">
             <el-col :span="8">
-              <el-input :prefix-icon="Search" v-model="searchValue" @keyup.enter.native="search"
+              <el-input :prefix-icon="Search" v-model="searchValue" @keyup.enter="search"
                 placeholder="关键字搜索（回车）" />
             </el-col>
             <!-- <el-col :span="6">
@@ -76,6 +76,14 @@
           </template>
         </el-table-column>
 
+        <!-- 添加学院列 -->
+        <el-table-column label="学院">
+          <template #default="scope">
+            <el-tooltip :content="scope.row.college" palacement="top" effect="light">
+              <span class="highlight">{{ scope.row.college }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
 
         <!-- <el-table-column label="角色名称">
           <template #default="scope">
@@ -108,7 +116,7 @@
           <template #default="scope">
             <el-button size="small" style="margin: 0 0 10px 10px;" @click="editUser(scope.row.studentId)">编辑</el-button>
             <el-popconfirm confirm-button-text="确定" cancel-button-text="取消" :icon="Delete" icon-color="#626AEF"
-              :title="'确定删除用户名为“' + scope.row.studentName + '”的用户吗？'" @confirm="delUser(scope.row.studentId)">
+              :title="'确定删除用户名为' + scope.row.studentName + '的用户吗？'" @confirm="delUser(scope.row.studentId)">
               <template #reference>
                 <el-button size="small" type="danger" style="margin-bottom: 10px;">删除</el-button>
               </template>
@@ -213,26 +221,22 @@ const loadData = async (state: any) => {
 }
 
 // 分页序号不乱
-const Nindex = (index) => {
-  // 当前页数 - 1 * 每页数据条数 + 1
-  const page = state.pageIndex // 当前页码
-  const pagesize = state.pageSize // 每页条数
+const Nindex = (index: number) => {
+  const page = state.pageIndex 
+  const pagesize = state.pageSize
   return index + 1 + (page - 1) * pagesize
 }
 
 // 切换页面的执行事件，  val 当前页码
-const changePage = (val) => {
+const changePage = (val: number) => {
   state.pageIndex = val;
   loadData(state);
 }
 
 // 刷新按钮
 const refresh = () => {
-  // 搜索表单内容
-  state.searchValue = null
-  // 筛选下拉框内容
+  state.searchValue = ""
   state.status = null
-  // 更新数据
   loadData(state);
 }
 // 搜索
@@ -240,7 +244,7 @@ const search = () => {
   if (state.searchValue !== null) {
     ElMessage({
       type: 'success',
-      message: `关键字“${state.searchValue}”搜索内容如下`,
+      message: `关键字"${state.searchValue}"搜索内容如下`,
     })
     loadData(state)
   }
@@ -304,6 +308,7 @@ const column = [
   { name: 'username', label: '用户名称' },
   { name: 'realname', label: '真实姓名' },
   { name: 'sex', label: '性别' },
+  { name: 'college', label: '学院' },
   { name: 'status', label: '状态' },
   { name: 'email', label: '邮箱' },
   { name: 'remarks', label: '备注' }
