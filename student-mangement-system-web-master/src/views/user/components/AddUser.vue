@@ -4,8 +4,8 @@
     <el-row>
  
       <el-col :span="12">
-        <el-form-item label="账号" prop="studentId">
-          <el-input v-model="formUser.studentName" placeholder="请输入账号" />
+        <el-form-item label="账号" prop="username">
+          <el-input v-model="formUser.username" placeholder="请输入账号" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -61,7 +61,7 @@ const emit = defineEmits(['closeAddUserForm', 'success'])
 const subLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const formUser = reactive({
-  studentId: '',
+  username: '',
   password: '',
   status: 1,
   studentName: '',
@@ -72,7 +72,7 @@ const formUser = reactive({
 })
 // 定义表单约束规则对象
 const rules = reactive<FormRules>({
-  studentId: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
+  username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
   password: [{ required: true, message: '登录密码不能为空', trigger: 'blur' }],
   studentName: [{ required: true, message: '真实姓名不能为空', trigger: 'blur' }],
   sysRole: [{ required: true, message: '角色不能为空', trigger: 'blur' }]

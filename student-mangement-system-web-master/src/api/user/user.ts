@@ -87,7 +87,7 @@ export function updateEmailApi(email:string,code:number) {
 export function updatePwdApi(data:object) {
     return request({
         url: 'user/updatePwd',
-        method: 'put',
+        method: 'post',
         data
     })
 }

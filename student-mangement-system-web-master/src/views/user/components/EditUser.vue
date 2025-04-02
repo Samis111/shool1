@@ -10,8 +10,8 @@
         </el-form-item>
       </el-col> -->
       <el-col :span="12">
-        <el-form-item label="用户名" prop="studentName">
-          <el-input v-model="formUser.studentName" placeholder="请输入用户名" />
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="formUser.username" placeholder="请输入用户名" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -56,7 +56,7 @@ const subLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
 const formUser = reactive({
   studentId: 0,
-  studentName: '',
+  username: '',
   password: '',
   status: 1,
   studentName: '',

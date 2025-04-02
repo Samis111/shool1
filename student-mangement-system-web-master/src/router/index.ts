@@ -114,59 +114,59 @@ export const staticRouter = [
             }
         ]
     },
-    {
-        path: '/base',
-        name: 'base',
-        meta: {
-            title: '数据管理',
-            icon: 'DataAnalysis',
-            role: ['ROLE_ADMIN']
-        },
-        redirect: '/base/gradeclass',
-        component: () => import('../views/layout/Index.vue'),
-        isMenu: true,
-        funcNode: 2,
-        children: [
-            {
-                path: 'gradeclass',
-                name: 'gradeclass',
-                meta: {
-                    title: '班级管理',
-                    icon: 'Box',
-                    role: ['ROLE_ADMIN']
-                },
-                component: () => import('../views/gradeclass/GradeClassList.vue')
-            },
-            {
-                path: 'student',
-                name: 'student',
-                meta: {
-                    title: '学生管理',
-                    icon: 'User',
-                    role: ['ROLE_ADMIN']
-                },
-                component: () => import('../views/student/StudentList.vue')
-            },
+    // {
+    //     path: '/base',
+    //     name: 'base',
+    //     meta: {
+    //         title: '数据管理',
+    //         icon: 'DataAnalysis',
+    //         role: ['ROLE_ADMIN']
+    //     },
+    //     redirect: '/base/gradeclass',
+    //     component: () => import('../views/layout/Index.vue'),
+    //     isMenu: true,
+    //     funcNode: 2,
+    //     children: [
+    //         {
+    //             path: 'gradeclass',
+    //             name: 'gradeclass',
+    //             meta: {
+    //                 title: '班级管理',
+    //                 icon: 'Box',
+    //                 role: ['ROLE_ADMIN']
+    //             },
+    //             component: () => import('../views/gradeclass/GradeClassList.vue')
+    //         },
+    //         {
+    //             path: 'student',
+    //             name: 'student',
+    //             meta: {
+    //                 title: '学生管理',
+    //                 icon: 'User',
+    //                 role: ['ROLE_ADMIN']
+    //             },
+    //             component: () => import('../views/student/StudentList.vue')
+    //         },
            
          
-        ]
-    },
-    {
-        path: '/scores',
-        name: 'scores',
-        meta: {
-            title: '成绩管理',
-            icon: 'GoldMedal',
-            role: ['ROLE_USER', 'ROLE_ADMIN']
-        },
-        redirect: '/scores/index',
-        component: () => import('../views/layout/Index.vue'),
-        isMenu: true,
-        funcNode: 2,
-        children: [
+    //     ]
+    // },
+    // {
+    //     path: '/scores',
+    //     name: 'scores',
+    //     meta: {
+    //         title: '成绩管理',
+    //         icon: 'GoldMedal',
+    //         role: ['ROLE_USER', 'ROLE_ADMIN']
+    //     },
+    //     redirect: '/scores/index',
+    //     component: () => import('../views/layout/Index.vue'),
+    //     isMenu: true,
+    //     funcNode: 2,
+    //     children: [
             
-        ]
-    },
+    //     ]
+    // },
     {
         path: '/census',
         name: 'census',
@@ -190,16 +190,16 @@ export const staticRouter = [
                 },
                 component: () => import('../views/census/ScoresCensus.vue')
             },
-            {
-                path: 'contrast',
-                name: 'scoresContrastCensusIndex',
-                meta: {
-                    title: '班级科目对比统计',
-                    icon: 'Notification',
-                    role: ['ROLE_USER', 'ROLE_ADMIN']
-                },
-                component: () => import('../views/census/ScoresContrastCensus.vue')
-            }
+            // {
+            //     path: 'contrast',
+            //     name: 'scoresContrastCensusIndex',
+            //     meta: {
+            //         title: '班级科目对比统计',
+            //         icon: 'Notification',
+            //         role: ['ROLE_USER', 'ROLE_ADMIN']
+            //     },
+            //     component: () => import('../views/census/ScoresContrastCensus.vue')
+            // }
         ]
     }
 ]

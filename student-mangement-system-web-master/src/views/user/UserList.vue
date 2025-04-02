@@ -280,7 +280,9 @@ const success = () => {
 const userInfo = ref()
 const editUser = async (id: number) => {
   const { data } = await getUserApi(id)
-  userInfo.value = data.result
+  console.log(data);
+  
+  userInfo.value = data.data
   editUserDialogFormVisible.value = true
 }
 // 关闭编辑用户弹出框

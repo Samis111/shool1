@@ -56,9 +56,9 @@
         <!--基本设置 end-->
         <el-divider border-style="dashed" />
         <!--绑定邮箱 start-->
-        <BindEmail />
+        <!-- <BindEmail /> -->
         <!--绑定邮箱 end-->
-        <el-divider border-style="dashed" />
+        <!-- <el-divider border-style="dashed" /> -->
         <!--修改密码 start-->
         <UpdatePwd />
         <!--修改密码 end-->
@@ -81,6 +81,8 @@ import BindEmail from './BindEmail.vue'
 import UpdatePwd from "./UpdatePwd.vue"
 import UserInfo from "./UserInfo.vue"
 const loading = ref(false)
+// 提交基础信息
+const userStore = useUserStore()
 const basicFormRef = ref<FormInstance>()
 const state = reactive({
   // 基本信息
@@ -88,7 +90,10 @@ const state = reactive({
     realname: '',
     sex: '',
     userIcon: '',
-    adminId: '',
+    adminId: computed(() => {
+      return userStore.userInfo.adminId
+    })
+    ,
   }
 })
 // 校验基础信息
@@ -109,8 +114,7 @@ const handleAvatarSuccess = (res: { status: number; result: { userIcon: string }
   }
 }
 
-// 提交基础信息
-const userStore = useUserStore()
+
 const onBasicSubmit = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
