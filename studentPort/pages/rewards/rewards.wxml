@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="header">
+    <view class="title">奖惩记录</view>
+  </view>
+
+  <view class="record-list">
+    <view class="record-item {{item.type === 'reward' ? 'reward' : 'punishment'}}" 
+          wx:for="{{records}}" 
+          wx:key="id">
+      <view class="record-content">
+        <view class="student-name">{{item.studentName}}</view>
+        <view class="record-info">
+          <text class="record-time">{{item.time}}</text>
+          <text class="record-desc">{{item.description}}</text>
+        </view>
+      </view>
+      <view class="record-tag">{{item.type === 'reward' ? '奖励' : '惩罚'}}</view>
+    </view>
+  </view>
+</view> 

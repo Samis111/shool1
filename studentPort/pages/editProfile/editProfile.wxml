@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="header">
+    <text class="title">编辑个人信息</text>
+  </view>
+
+  <view class="form-group">
+    <view class="form-item">
+      <text class="label">真实姓名</text>
+      <input class="input" value="{{realName}}" placeholder="请输入真实姓名" bindinput="onRealNameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">性别</text>
+      <picker class="picker" bindchange="onGenderChange" value="{{genderIndex}}" range="{{genders}}">
+        <view class="picker-text">{{genders[genderIndex]}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="group-title">修改密码</view>
+    <view class="form-item">
+      <text class="label">原密码</text>
+      <input class="input" type="password" value="{{oldPassword}}" placeholder="请输入原密码" bindinput="onOldPasswordInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">新密码</text>
+      <input class="input" type="password" value="{{newPassword}}" placeholder="请输入新密码" bindinput="onNewPasswordInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">确认密码</text>
+      <input class="input" type="password" value="{{confirmPassword}}" placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
+    </view>
+  </view>
+
+  <view class="button-container">
+    <button class="save-button" bindtap="saveChanges">保存修改</button>
+  </view>
+</view> 

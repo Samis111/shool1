@@ -1,0 +1,29 @@
+<!--index.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="header">
+      <view class="title">课程介绍</view>
+    </view>
+
+    <view class="course-list">
+      <view class="course-card" 
+            wx:for="{{courses}}" 
+            wx:key="id"
+            bindtap="showCourseDetail"
+            data-course="{{item}}">
+        <view class="course-cover" style="background-color: {{item.color}}">
+          <image wx:if="{{item.cover}}" src="{{item.cover}}" mode="aspectFill"></image>
+          <text wx:else class="course-abbr">{{item.name[0]}}</text>
+        </view>
+        <view class="course-content">
+          <view class="course-header">
+            <view class="course-name">{{item.name}}</view>
+            <view class="course-teacher">{{item.teacher}}</view>
+          </view>
+          <view class="course-time">{{item.time}}</view>
+          <view class="course-intro">{{item.intro}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

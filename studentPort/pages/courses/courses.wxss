@@ -1,0 +1,65 @@
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.courses-list {
+  padding: 0 10rpx;
+}
+
+.course-card {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.course-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.course-credit {
+  font-size: 28rpx;
+  color: #007AFF;
+}
+
+.course-info {
+  padding-top: 20rpx;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 10rpx;
+}
+
+.label {
+  color: #666;
+  font-size: 28rpx;
+  width: 160rpx;
+}
+
+.value {
+  color: #333;
+  font-size: 28rpx;
+  flex: 1;
+} 
