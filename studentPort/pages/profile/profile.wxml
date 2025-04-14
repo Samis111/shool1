@@ -8,7 +8,7 @@
     </button>
     <view class="user-info">
       <input type="nickname" class="nickname-input" placeholder="请输入昵称" value="{{userInfo.nickname}}" bindinput="userInput"/>
-      <text class="student-id">学号：{{studentId || '未绑定'}}</text>
+      <!-- <text class="student-id">学号：{{studentId || '未绑定'}}</text> -->
     </view>
   </view>
 

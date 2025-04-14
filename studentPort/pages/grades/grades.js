@@ -1,51 +1,88 @@
+const { gradeApi } = require('../../utils/api');
+
 Page({
   data: {
-    allGrades: [
-      {
-        id: 1,
-        name: '高等数学',
-        score: 95
-      },
-      {
-        id: 2,
-        name: '大学英语',
-        score: 88
-      },
-      {
-        id: 3,
-        name: '计算机基础',
-        score: 92
-      },
-      {
-        id: 4,
-        name: '大学物理',
-        score: 85
-      },
-      {
-        id: 5,
-        name: '线性代数',
-        score: 90
-      },
-      {
-        id: 6,
-        name: '程序设计基础',
-        score: 94
-      }
-    ],
-    averageScore: 0
+    gradeList: [],
+    stats: {
+      totalScore: 0,
+      averageScore: 0,
+      totalCount: 0
+    }
   },
 
   onLoad() {
-    this.calculateAverage();
+    this.loadGradeData();
   },
 
-  // 计算平均分
-  calculateAverage() {
-    const total = this.data.allGrades.reduce((sum, grade) => sum + grade.score, 0);
-    const average = (total / this.data.allGrades.length).toFixed(1);
+  onShow() {
+    this.loadGradeData();
+  },
 
-    this.setData({
-      averageScore: average
-    });
+  // 加载成绩数据
+  async loadGradeData() {
+    try {
+      wx.showLoading({
+        title: '加载中...'
+      });
+
+      // 获取成绩列表
+      const gradesRes = await gradeApi.getGrades();
+      console.log('成绩列表数据：', gradesRes.data.records);
+      const gradeList = Array.isArray(gradesRes.data.records) ? gradesRes.data.records : [];
+      
+      // 计算统计数据
+      const stats = this.calculateStats(gradeList);
+      
+      this.setData({
+        gradeList,
+        stats
+      });
+    } catch (err) {
+      console.error('加载成绩失败：', err);
+      wx.showToast({
+        title: '加载失败，请稍后重试',
+        icon: 'none'
+      });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  // 计算统计数据
+  calculateStats(gradeList) {
+    if (!gradeList.length) {
+      return {
+        totalScore: 0,
+        averageScore: 0,
+        totalCount: 0
+      };
+    }
+
+    const totalScore = gradeList.reduce((sum, grade) => sum + (grade.score || 0), 0);
+    const totalCount = gradeList.length;
+    const averageScore = totalCount ? (totalScore / totalCount).toFixed(1) : 0;
+
+    return {
+      totalScore,
+      averageScore,
+      totalCount
+    };
+  },
+
+  // 获取成绩等级
+  getGradeLevel(score) {
+    if (score >= 90) return 'excellent';
+    if (score >= 80) return 'good';
+    if (score >= 60) return 'pass';
+    return 'fail';
+  },
+
+  // 下拉刷新
+  async onPullDownRefresh() {
+    try {
+      await this.loadGradeData();
+    } finally {
+      wx.stopPullDownRefresh();
+    }
   }
 }); 

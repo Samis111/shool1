@@ -6,24 +6,21 @@
     </view>
 
     <view class="course-list">
-      <view class="course-card" 
-            wx:for="{{courses}}" 
-            wx:key="id"
-            bindtap="showCourseDetail"
-            data-course="{{item}}">
-        <view class="course-cover" style="background-color: {{item.color}}">
-          <image wx:if="{{item.cover}}" src="{{item.cover}}" mode="aspectFill"></image>
-          <text wx:else class="course-abbr">{{item.name[0]}}</text>
-        </view>
-        <view class="course-content">
-          <view class="course-header">
-            <view class="course-name">{{item.name}}</view>
-            <view class="course-teacher">{{item.teacher}}</view>
+      <block wx:for="{{courses}}" wx:key="courseId">
+        <view class="course-card" bindtap="showCourseDetail" data-course="{{item}}">
+          <view class="course-info">
+            <view class="course-name">{{item.courseName}}</view>
+            <view class="course-teacher">教师：{{item.teacher}}</view>
+            <view class="course-id">课程编号：{{item.courseId}}</view>
+            <view class="course-credits" wx:if="{{item.credits}}">学分：{{item.credits}}</view>
           </view>
-          <view class="course-time">{{item.time}}</view>
-          <view class="course-intro">{{item.intro}}</view>
         </view>
-      </view>
+      </block>
+    </view>
+
+    <!-- 无数据提示 -->
+    <view class="empty-tip" wx:if="{{courses.length === 0}}">
+      <text>暂无课程数据</text>
     </view>
   </view>
 </scroll-view>

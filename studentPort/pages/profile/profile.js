@@ -1,4 +1,6 @@
 // pages/profile/profile.js
+const { userApi } = require('../../utils/api');
+
 Page({
 
   /**
@@ -13,21 +15,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    // 获取全局用户信息
-    const app = getApp();
-    const userInfo = app.globalData.userInfo || {};
-    const studentId = wx.getStorageSync('studentId');
-    
-    // 确保 userInfo 中有 nickname 字段
-    if (!userInfo.nickname && userInfo.nickName) {
-      userInfo.nickname = userInfo.nickName;
-    }
-    
-    this.setData({
-      userInfo,
-      studentId
-    });
-    console.log('当前用户信息：', userInfo);
+    this.loadUserInfo();
   },
 
   /**
@@ -41,15 +29,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 页面显示时也更新用户信息
-    const app = getApp();
-    const userInfo = app.globalData.userInfo || {};
-    if (!userInfo.nickname && userInfo.nickName) {
-      userInfo.nickname = userInfo.nickName;
-    }
-    this.setData({
-      userInfo
-    });
+    this.loadUserInfo();
   },
 
   /**
@@ -87,62 +67,88 @@ Page({
 
   },
 
-  // 跳转到编辑页面
-  navigateToEdit() {
-    console.log('准备跳转到编辑页面');
-    wx.navigateTo({
-      url: '/pages/editProfile/editProfile',
-      success: (res) => {
-        console.log('跳转成功');
-      },
-      fail: (err) => {
-        console.error('跳转失败：', err);
-        // 尝试使用另一种跳转方式
-        wx.redirectTo({
-          url: '/pages/editProfile/editProfile',
-          success: (res) => {
-            console.log('重定向跳转成功');
-          },
-          fail: (error) => {
-            console.error('重定向也失败了：', error);
-            wx.showToast({
-              title: '页面跳转失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
-    });
+  // 加载用户信息
+  async loadUserInfo() {
+    try {
+      wx.showLoading({
+        title: '加载中...'
+      });
+      const res = await userApi.getUserInfo();
+      // 获取全局用户信息（微信头像和昵称）
+      const wxUserInfo = getApp().globalData.userInfo || {};
+      
+      this.setData({
+        userInfo: {
+          ...res.data,
+          avatarUrl: wxUserInfo.avatarUrl || res.data.avatarUrl,
+          nickname: wxUserInfo.nickname || res.data.nickname
+        },
+        studentId: res.data.studentId
+      });
+    } catch (err) {
+      console.error('获取用户信息失败：', err);
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   // 头像和昵称相关方法
-  userInput(e) {
-    console.log(e);
-    // 使用 e.detail.value 获取输入框的值
-    let nickname = e.detail.value;
-    this.setData({
-      userInfo: {
-       ...this.data.userInfo,
-        nickname: nickname
-      }
-    });
-    // 更改全局用户信息
-    getApp().globalData.userInfo = this.data.userInfo;
-    console.log(getApp().globalData.userInfo);
+  async userInput(e) {
+    const nickname = e.detail.value;
+    try {
+      // 更新本地显示
+      this.setData({
+        'userInfo.nickname': nickname
+      });
+      
+      // 更新全局数据
+      getApp().globalData.userInfo = {
+        ...getApp().globalData.userInfo,
+        nickname
+      };
+
+      // 调用接口更新昵称
+      await userApi.updateUserInfo({
+        nickname
+      });
+    } catch (err) {
+      console.error('更新昵称失败：', err);
+    }
   },
 
-  onChooseAvatar(e) {
-    console.log('选择头像：', e.detail);
-    this.setData({
-      // 更新头像 userInfo.avatarUrl
-      userInfo: {
-        ...this.data.userInfo,
-        avatarUrl: e.detail.avatarUrl
+  async onChooseAvatar(e) {
+    const avatarUrl = e.detail.avatarUrl;
+    try {
+      // 更新本地显示
+      this.setData({
+        'userInfo.avatarUrl': avatarUrl
+      });
+
+      // 更新全局数据
+      getApp().globalData.userInfo = {
+        ...getApp().globalData.userInfo,
+        avatarUrl
+      };
+
+      // 上传头像到服务器
+      await userApi.updateAvatar(avatarUrl);
+    } catch (err) {
+      console.error('更新头像失败：', err);
+    }
+  },
+
+  // 跳转到编辑页面
+  navigateToEdit() {
+    wx.navigateTo({
+      url: '/pages/editProfile/editProfile',
+      fail: (err) => {
+        console.error('跳转失败：', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
       }
     });
-    // 更改全局用户信息
-    getApp().globalData.userInfo = this.data.userInfo;
-    console.log(getApp().globalData.userInfo);
   },
 
   // 编辑真实姓名
@@ -193,25 +199,33 @@ Page({
   },
 
   // 退出登录
-  logout() {
+  async logout() {
     wx.showModal({
       title: '提示',
       content: '确定要退出登录吗？',
-      success: (res) => {
+      success: async (res) => {
         if (res.confirm) {
-          // 清除本地存储
-          wx.clearStorage();
-          // 清除全局数据
-          getApp().globalData.userInfo = {};
-          // 重置数据
-          this.setData({
-            userInfo: {},
-            studentId: ''
-          });
-          // 跳转到登录页
-          wx.reLaunch({
-            url: '/pages/login/login'
-          });
+          try {
+            // 清除本地存储
+            wx.clearStorage();
+            // 清除全局数据
+            getApp().globalData.userInfo = {};
+            // 重置数据
+            this.setData({
+              userInfo: {},
+              studentId: ''
+            });
+            // 跳转到登录页
+            wx.reLaunch({
+              url: '/pages/login/login'
+            });
+          } catch (err) {
+            console.error('退出登录失败：', err);
+            wx.showToast({
+              title: '退出失败',
+              icon: 'none'
+            });
+          }
         }
       }
     });

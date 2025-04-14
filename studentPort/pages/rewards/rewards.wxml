@@ -1,20 +1,37 @@
 <view class="container">
-  <view class="header">
-    <view class="title">奖惩记录</view>
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-item">
+      <text class="stats-value">{{stats.rewardCount}}</text>
+      <text class="stats-label">获奖次数</text>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <text class="stats-value">{{stats.punishmentCount}}</text>
+      <text class="stats-label">处分次数</text>
+    </view>
   </view>
 
+  <!-- 奖惩列表 -->
   <view class="record-list">
-    <view class="record-item {{item.type === 'reward' ? 'reward' : 'punishment'}}" 
-          wx:for="{{records}}" 
-          wx:key="id">
-      <view class="record-content">
-        <view class="student-name">{{item.studentName}}</view>
-        <view class="record-info">
-          <text class="record-time">{{item.time}}</text>
-          <text class="record-desc">{{item.description}}</text>
+    <block wx:for="{{rewardList}}" wx:key="rpId">
+      <view class="record-card {{item.eventType === '奖励' ? 'reward' : 'punishment'}}">
+        <view class="record-header">
+          <view class="record-type">{{item.eventType}}</view>
+          <view class="record-date">{{formatDate(item.eventDate)}}</view>
+        </view>
+        <view class="student-info">
+          <text class="student-name">学生：{{item.studentId}}</text>
+        </view>
+        <view class="record-content">
+          {{item.eventDescription}}
         </view>
       </view>
-      <view class="record-tag">{{item.type === 'reward' ? '奖励' : '惩罚'}}</view>
-    </view>
+    </block>
+  </view>
+
+  <!-- 无数据提示 -->
+  <view class="empty-tip" wx:if="{{rewardList.length === 0}}">
+    <text>暂无奖惩记录</text>
   </view>
 </view> 

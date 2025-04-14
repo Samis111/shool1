@@ -1,20 +1,34 @@
 <view class="container">
-  <view class="header">
-    <view class="title">我的成绩</view>
-    <view class="summary">
-      <view class="average-box">
-        <text class="average-value">{{averageScore}}</text>
-        <text class="average-label">平均分</text>
-      </view>
+  <!-- 成绩统计 -->
+  <view class="stats-card">
+    <view class="stats-item">
+      <text class="stats-value">{{stats.averageScore}}</text>
+      <text class="stats-label">平均分</text>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <text class="stats-value">{{stats.totalCount}}</text>
+      <text class="stats-label">课程数</text>
     </view>
   </view>
 
+  <!-- 成绩列表 -->
   <view class="grade-list">
-    <view class="grade-item" wx:for="{{allGrades}}" wx:key="id">
-      <view class="course-name">{{item.name}}</view>
-      <view class="grade-score {{item.score >= 90 ? 'excellent' : item.score >= 80 ? 'good' : item.score >= 60 ? 'pass' : 'fail'}}">
-        {{item.score}}
+    <block wx:for="{{gradeList}}" wx:key="scoreId">
+      <view class="grade-card">
+        <view class="grade-info">
+          <view class="course-name">{{item.courseName || '未知课程'}}</view>
+          <view class="course-id">课程编号：{{item.courseId}}</view>
+        </view>
+        <view class="grade-score {{getGradeLevel(item.score)}}">
+          {{item.score}}
+        </view>
       </view>
-    </view>
+    </block>
+  </view>
+
+  <!-- 无数据提示 -->
+  <view class="empty-tip" wx:if="{{gradeList.length === 0}}">
+    <text>暂无成绩数据</text>
   </view>
 </view> 
