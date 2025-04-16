@@ -41,9 +41,6 @@
       "outputPath": ""
     },
     "compileWorklet": false,
-    "packNpmManually": false,
-    "minifyWXSS": true,
-    "minifyWXML": true,
     "localPlugins": false,
     "condition": false,
     "swc": false,
@@ -56,7 +53,7 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "appid": "your_appid_here",
+  "appid": "wx958c331bb5b02d97",
   "projectname": "studentPort",
   "simulatorPluginLibVersion": {}
 }

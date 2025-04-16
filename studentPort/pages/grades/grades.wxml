@@ -17,8 +17,8 @@
     <block wx:for="{{gradeList}}" wx:key="scoreId">
       <view class="grade-card">
         <view class="grade-info">
-          <view class="course-name">{{item.courseName || '未知课程'}}</view>
-          <view class="course-id">课程编号：{{item.courseId}}</view>
+          <view class="course-name">{{item.departments.courseName || '未知课程'}}</view>
+          <view class="course-id">学分：{{item.departments.credits}}</view>
         </view>
         <view class="grade-score {{getGradeLevel(item.score)}}">
           {{item.score}}

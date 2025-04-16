@@ -38,7 +38,7 @@ public class Scores implements Serializable {
     @TableField(exist = false)
     private Students students;
     @TableField(exist = false)
-    private Departments departments;
+    private Courses departments;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

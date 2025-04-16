@@ -10,7 +10,7 @@
         <view class="course-card" bindtap="showCourseDetail" data-course="{{item}}">
           <view class="course-info">
             <view class="course-name">{{item.courseName}}</view>
-            <view class="course-teacher">教师：{{item.teacher}}</view>
+            <view class="course-teacher">教师：{{item.teachername}}</view>
             <view class="course-id">课程编号：{{item.courseId}}</view>
             <view class="course-credits" wx:if="{{item.credits}}">学分：{{item.credits}}</view>
           </view>

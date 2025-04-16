@@ -37,7 +37,7 @@ Page({
           // 保存登录信息
           wx.setStorageSync('token', result.token);
           wx.setStorageSync('userInfo', userProfile.userInfo);
-          
+
           // 跳转到首页
           this.redirectToHome();
         }
@@ -57,7 +57,7 @@ Page({
       try {
         // 获取登录凭证
         const loginResult = await wx.login();
-        
+
         // 发送到后端解密手机号
         const result = await this.loginWithServer({
           code: loginResult.code,
@@ -73,7 +73,7 @@ Page({
           // 保存登录信息
           wx.setStorageSync('token', result.token);
           wx.setStorageSync('phoneNumber', result.phoneNumber);
-          
+
           // 跳转到首页
           this.redirectToHome();
         }

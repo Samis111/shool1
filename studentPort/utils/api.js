@@ -1,5 +1,5 @@
 // API基础URL
-const BASE_URL = 'http://localhost:8082';  // 修改为实际的后端地址
+const BASE_URL = 'http://localhost:8080';  // 修改为实际的后端地址
 
 
 // 添加请求拦截器
@@ -122,7 +122,7 @@ const courseApi = {
 const gradeApi = {
   // 获取所有成绩
   getGrades: () => {
-    return request(`/scores?pageIndex=1&pageSize=10&name=&stuno=${getCurrentUserId()}`, 'GET');
+    return request(`/scores?pageIndex=1&pageSize=10&userid=1&name=&stuno=${getCurrentUserId()}`, 'GET');
   },
 
 };

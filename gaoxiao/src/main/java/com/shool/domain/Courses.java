@@ -35,6 +35,8 @@ public class Courses implements Serializable {
      */
     private String teacher;
 
+
+    private String teachername;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

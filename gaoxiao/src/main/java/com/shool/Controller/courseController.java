@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RequestMapping("course")
 @RestController
@@ -20,6 +21,7 @@ public class courseController {
 
     @Autowired
     private CoursesService coursesService;
+
 
 
     @GetMapping()
@@ -35,6 +37,8 @@ public class courseController {
         }
 
         IPage<Courses> page = coursesService.page(objectIPage, departmentsQueryWrapper);
+
+        List<Courses> records = page.getRecords();
 
         return Result.ok(page);
     }

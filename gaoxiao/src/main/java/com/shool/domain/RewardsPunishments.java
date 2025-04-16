@@ -42,6 +42,9 @@ public class RewardsPunishments implements Serializable {
     private Date eventDate;
 
     @TableField(exist = false)
+    private Students students;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
     @Override

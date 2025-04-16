@@ -3,10 +3,8 @@ package com.shool.Controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shool.domain.Departments;
-import com.shool.domain.Result;
-import com.shool.domain.Scores;
-import com.shool.domain.Students;
+import com.shool.domain.*;
+import com.shool.service.CoursesService;
 import com.shool.service.DepartmentsService;
 import com.shool.service.ScoresService;
 import com.shool.service.StudentsService;
@@ -28,28 +26,33 @@ public class scoresController {
     private StudentsService studentsService;
 
     @Autowired
-    private DepartmentsService departmentsService;
+    private CoursesService departmentsService;
 
     @GetMapping()
     public Result list(
             @RequestParam("pageIndex") Integer pageIndex,
             @RequestParam("pageSize") Integer pageSize,
-            @RequestParam(name = "searchValue", defaultValue = "") String searchValue
+            @RequestParam(name = "searchValue", defaultValue = "") String searchValue,
+            @RequestParam(name = "userid", defaultValue = "") String userid
     ) {
         QueryWrapper<Scores> studentsQueryWrapper = new QueryWrapper<>();
         if (!searchValue.equals("")) {
             studentsQueryWrapper.like("student_name", searchValue);
         }
+
+        if (!userid.equals("")){
+            studentsQueryWrapper.eq("student_id",userid);
+        }
+
         IPage<Scores> objectIPage = new Page<>(pageIndex, pageSize);
         IPage<Scores> page = scoresService.page(objectIPage, studentsQueryWrapper);
 
-
-        List<Departments> departmentsList = departmentsService.list();
+        List<Courses> departmentsList = departmentsService.list();
         List<Students> studentsList = studentsService.list();
 
-        HashMap<String, Departments> hashMap1 = new HashMap<>();
-        for (Departments departments : departmentsList) {
-            hashMap1.put(departments.getDepartmentId() + "", departments);
+        HashMap<String, Courses> hashMap1 = new HashMap<>();
+        for (Courses departments : departmentsList) {
+            hashMap1.put(departments.getCourseId() + "", departments);
         }
 
         HashMap<String, Students> hashMap2 = new HashMap<>();
@@ -57,16 +60,13 @@ public class scoresController {
             hashMap2.put(departments.getStudentId() + "", departments);
         }
 
-        for(Scores scores:page.getRecords()){
-
-            Departments departments = hashMap1.get(scores.getCourseId()+"");
+        for (Scores scores : page.getRecords()) {
+            Courses departments = hashMap1.get(scores.getCourseId() + "");
             scores.setDepartments(departments);
-
             Students students = hashMap2.get(scores.getStudentId() + "");
             scores.setStudents(students);
 
         }
-
 
         return Result.ok(page);
     }

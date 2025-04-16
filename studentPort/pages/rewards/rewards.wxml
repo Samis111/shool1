@@ -21,7 +21,7 @@
           <view class="record-date">{{formatDate(item.eventDate)}}</view>
         </view>
         <view class="student-info">
-          <text class="student-name">学生：{{item.studentId}}</text>
+          <text class="student-name">学生：{{item.students.studentName}}</text>
         </view>
         <view class="record-content">
           {{item.eventDescription}}

@@ -71,7 +71,7 @@
 
         <el-table-column prop="coursename" label="学科">
           <template #default="scope">
-            <span>{{ scope.row.departments.departmentName }}</span>
+            <span>{{ scope.row.departments.courseName }}</span>
           </template>
         </el-table-column>
 

@@ -6,11 +6,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shool.domain.Departments;
 import com.shool.domain.Result;
 import com.shool.domain.RewardsPunishments;
+import com.shool.domain.Students;
 import com.shool.service.RewardsPunishmentsService;
+import com.shool.service.StudentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.List;
 
 @RequestMapping("rewardsPunishments")
 @RestController
@@ -19,6 +23,8 @@ public class rewardsPunishmentsController {
     @Autowired
     private RewardsPunishmentsService punishmentsService;
 
+    @Autowired
+    private StudentsService studentsService;
 
     @GetMapping()
     public Result list(
@@ -28,12 +34,16 @@ public class rewardsPunishmentsController {
     ) {
         IPage<RewardsPunishments> objectIPage = new Page<>(pageIndex, pageSize);
         QueryWrapper<RewardsPunishments> departmentsQueryWrapper = new QueryWrapper<>();
-//        if (!searchValue.equals("")) {
-//            departmentsQueryWrapper.like("department_name", searchValue);
-//        }
-
         IPage<RewardsPunishments> page = punishmentsService.page(objectIPage, departmentsQueryWrapper);
-
+        List<Students> list = studentsService.list();
+        HashMap<Integer, Students> hashMap = new HashMap<>();
+        for (Students students:list){
+            hashMap.put(students.getStudentId(),students);
+        }
+        for (RewardsPunishments rewardsPunishments:page.getRecords()){
+            Students students = hashMap.get(rewardsPunishments.getStudentId());
+            rewardsPunishments.setStudents(students);
+        }
         return Result.ok(page);
     }
 
