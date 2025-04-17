@@ -12,14 +12,14 @@
         <!--搜索区域 start-->
         <div class="card-search">
           <el-row :gutter="12">
-            <el-col :span="5">
+            <!-- <el-col :span="5">
               <el-select v-model="gradeClassId" placeholder="请选择班级" style="width: 100%;">
                 <el-option v-for="item in gradeClassOptions" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
-            </el-col>
+            </el-col> -->
             <el-col :span="5">
               <el-select v-model="courseId" placeholder="请选择科目" style="width: 100%;">
-                <el-option v-for="item in courseOptions" :key="item.id" :label="item.name" :value="item.id" />
+                <el-option v-for="item in courseOptions" :key="item.courseId" :label="item.courseName" :value="item.courseId" />
               </el-select>
             </el-col>
             <el-col :span="6">
@@ -148,6 +148,7 @@ import { ref, reactive, toRefs, onMounted } from 'vue'
 import { gradeClassListApi } from "../../api/student/student";
 import { getAllCourseListApi } from "../../api/teacher/teacher";
 import { deleteScoresApi, editScoresApi, getScoresListApi, registerScoresApi } from "../../api/scores/scores";
+import { getCourseListApi } from "../../api/course/course";
 import { formatTime } from "../../utils/date"
 import { ElMessage } from 'element-plus'
 import { exportExcel } from "../../utils/exprotExcel";
@@ -172,10 +173,20 @@ const courseId = ref(null)
 const courseOptions = ref<object[]>([])
 // 获取所有课程列表
 async function getAllCourseList() {
+  const params = {
+    'pageIndex': 1,
+    'pageSize': 10000,
+    'searchValue': ''
+  }
   try {
-    const { data } = await getAllCourseListApi()
-    if (data.status === 200) {
-      courseOptions.value = data.result
+
+    const { data } = await getCourseListApi(params)
+    console.log('data:', data);
+    
+    if (data.code === 200) {
+      courseOptions.value = data.data.records
+
+      console.log('courseOptions.value:', courseOptions.value)
     }
   } catch (e) {
     console.log(e)
@@ -349,7 +360,7 @@ const exportExcelAction = () => {
 onMounted(() => {
   loadData(state)
   getAllCourseList()
-  gradeClassList()
+  // gradeClassList()
 })
 const { tableData, pageIndex, pageSize, loading, total, name, stuno } = toRefs(state)
 </script>
