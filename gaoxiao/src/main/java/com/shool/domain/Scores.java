@@ -35,8 +35,27 @@ public class Scores implements Serializable {
      * 
      */
     private BigDecimal score;
+
+    @TableField(exist = false)
+    private String semester;
+    
+    @TableField(exist = false)
+    private String examType;
+    
+    @TableField(exist = false)
+    private String remark;
+    
+    // 统计相关字段
+    @TableField(exist = false)
+    private String gradeLevel; // 成绩等级
+    @TableField(exist = false)
+    private Integer count;     // 统计数量
+    @TableField(exist = false)
+    private Double percentage; // 百分比
+
     @TableField(exist = false)
     private Students students;
+    
     @TableField(exist = false)
     private Courses departments;
 

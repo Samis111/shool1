@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("scores")
@@ -96,5 +97,20 @@ public class scoresController {
     public Result del(@PathVariable("id") Integer id) {
         boolean byId = scoresService.removeById(id);
         return Result.ok("删除成功");
+    }
+
+    /**
+     * 获取成绩统计信息
+     * @param courseId 课程ID
+     * @return 成绩统计结果
+     */
+    @GetMapping("/census")
+    public Result getScoreCensus(@RequestParam Integer courseId) {
+        try {
+            List<Scores> censusData = scoresService.getScoreCensus(courseId);
+            return Result.ok(censusData);
+        } catch (Exception e) {
+            return Result.fail("获取成绩统计失败：" + e.getMessage());
+        }
     }
 }

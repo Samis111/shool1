@@ -1,119 +1,189 @@
 Page({
   data: {
-    userInfo: null,
-    phoneNumber: null,
+    studentId: '',
+    password: '',
+    isSubmitting: false,
+    captcha: '',
+    captchaUrl: '',
+    captchaKey: '',
+    userInfo: null
   },
 
   onLoad() {
-    // 检查是否已经登录
-    const token = wx.getStorageSync('token');
-    if (token) {
-      this.redirectToHome();
-    }
+    this.refreshCaptcha()
   },
 
-  // 处理微信登录
-  async handleWechatLogin() {
-    try {
-      // 获取用户信息
-      const userProfile = await wx.getUserProfile({
-        desc: '用于完善用户资料'
-      });
+  handleStudentIdInput(e) {
+    this.setData({
+      studentId: e.detail.value
+    })
+  },
 
+  handlePasswordInput(e) {
+    this.setData({
+      password: e.detail.value
+    })
+  },
+
+  handleCaptchaInput(e) {
+    this.setData({
+      captcha: e.detail.value
+    })
+  },
+
+  refreshCaptcha() {
+    this.setData({ captchaUrl: '' })
+
+    setTimeout(() => {
       this.setData({
-        userInfo: userProfile.userInfo
-      });
-
-      // 获取登录凭证
-      const loginResult = await wx.login();
-      if (loginResult.code) {
-        // 发送到后端进行登录验证
-        const result = await this.loginWithServer({
-          code: loginResult.code,
-          userInfo: userProfile.userInfo
-        });
-
-        if (result.success) {
-          // 保存登录信息
-          wx.setStorageSync('token', result.token);
-          wx.setStorageSync('userInfo', userProfile.userInfo);
-
-          // 跳转到首页
-          this.redirectToHome();
-        }
-      }
-    } catch (error) {
-      console.error('登录失败：', error);
-      wx.showToast({
-        title: '登录失败，请重试',
-        icon: 'none'
-      });
-    }
+        captchaUrl: 'https://example.com/captcha.jpg',
+        captchaKey: 'random_key_' + Date.now()
+      })
+    }, 500)
   },
 
-  // 获取手机号
-  async getPhoneNumber(e) {
-    if (e.detail.errMsg === "getPhoneNumber:ok") {
-      try {
-        // 获取登录凭证
-        const loginResult = await wx.login();
+  // handleLogin() {
 
-        // 发送到后端解密手机号
-        const result = await this.loginWithServer({
-          code: loginResult.code,
-          encryptedData: e.detail.encryptedData,
-          iv: e.detail.iv
-        });
+  //   let that = this;
 
-        if (result.success) {
-          this.setData({
-            phoneNumber: result.phoneNumber
-          });
+  //   // 表单验证
+  //   if (!this.data.studentId.trim()) {
+  //     wx.showToast({
+  //       title: '请输入学号',
+  //       icon: 'none'
+  //     })
+  //     return
+  //   }
 
-          // 保存登录信息
-          wx.setStorageSync('token', result.token);
-          wx.setStorageSync('phoneNumber', result.phoneNumber);
+  //   if (!this.data.password.trim()) {
+  //     wx.showToast({
+  //       title: '请输入密码',
+  //       icon: 'none'
+  //     })
+  //     return
+  //   }
 
-          // 跳转到首页
-          this.redirectToHome();
-        }
-      } catch (error) {
-        console.error('获取手机号失败：', error);
+  //   if (!this.data.captcha.trim()) {
+  //     wx.showToast({
+  //       title: '请输入验证码',
+  //       icon: 'none'
+  //     })
+  //     return
+  //   }
+
+  //   // 防止重复提交
+  //   if (this.data.isSubmitting) return
+
+  //   this.setData({ isSubmitting: true })
+
+  //   // 这里添加登录逻辑
+  //   wx.showLoading({
+  //     title: '登录中...'
+  //   })
+
+  //   if (this.data.captcha !== '1234') {
+  //     wx.showToast({
+  //       title: '验证码错误',
+  //       icon: 'none'
+  //     })
+  //     this.refreshCaptcha()
+  //     return
+  //   }
+
+
+
+  //   let data = { password: this.data.password, username: this.data.studentId };
+  //   console.log(data)
+  //   wx.request({
+  //     url: 'http://localhost:8083/Login/login',
+  //     data: data,
+  //     method: 'POST',
+  //     header: {
+  //       'content-type': 'application/json'
+  //     },
+  //     success(res) {
+      
+  //       wx.hideLoading()
+  //       if (res.data.code === 200) {
+  //         that.setData({ isSubmitting: false })
+  //         wx.setStorageSync('isLoggedIn', true)
+  //         wx.setStorageSync('userInfo', res.data.data)
+  //         wx.switchTab({
+  //           url: '/pages/index/index'
+  //         })
+  //       } else {
+  //         wx.showToast({
+  //           title: res.data.message,
+  //           icon: 'none'
+  //         })
+  //         return;
+  //       }
+
+
+  //     }
+  //   })
+
+   
+  // },
+
+  handleWechatLogin() {
+    wx.getUserProfile({
+      desc: '用于完善用户资料',
+      success: (res) => {
+        const userInfo = res.userInfo
+        wx.login({
+          success: (loginRes) => {
+            if (loginRes.code) {
+              wx.showLoading({
+                title: '登录中...'
+              })
+              // 发送 code 到后台换取 token
+              wx.request({
+                url: 'http://localhost:8082/WXLogin/setCode?code='+loginRes.code,
+                method: 'get',
+                
+                success: (response) => {
+                  wx.hideLoading()
+                  if (response.data.code === 200) {
+                    console.log(response.data);
+                    // 保存用户信息
+                    wx.setStorageSync('userInfo', response.data.data)
+                    wx.setStorageSync('isLoggedIn', true)
+                    
+                    // 跳转到首页
+                    wx.switchTab({
+                      url: '/pages/index/index'
+                    })
+                  } else {
+                    wx.showToast({
+                      title: response.data.message || '登录失败',
+                      icon: 'none'
+                    })
+                  }
+                },
+                fail: () => {
+                  wx.hideLoading()
+                  wx.showToast({
+                    title: '网络错误，请重试',
+                    icon: 'none'
+                  })
+                }
+              })
+            } else {
+              wx.showToast({
+                title: '登录失败',
+                icon: 'none'
+              })
+            }
+          }
+        })
+      },
+      fail: (err) => {
         wx.showToast({
-          title: '获取手机号失败，请重试',
+          title: '需要授权才能使用',
           icon: 'none'
-        });
+        })
       }
-    }
-  },
-
-  // 与服务器通信进行登录
-  async loginWithServer(data) {
-    try {
-      const response = await wx.request({
-        url: 'YOUR_API_BASE_URL/api/login',
-        method: 'POST',
-        data: data
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error('服务器通信失败：', error);
-      throw error;
-    }
-  },
-
-  // 跳转到首页
-  redirectToHome() {
-    wx.reLaunch({
-      url: '/pages/index/index'
-    });
-  },
-
-  // 显示隐私政策
-  showPrivacyPolicy() {
-    wx.navigateTo({
-      url: '/pages/privacy/privacy'
-    });
+    })
   }
-}); 
+}) 

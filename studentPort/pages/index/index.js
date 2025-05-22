@@ -27,7 +27,7 @@ Page({
       console.log('课程表数据：', scheduleRes.data.records);
       const courses = Array.isArray(scheduleRes.data.records) ? scheduleRes.data.records : [];
       
-      this.setData({
+    this.setData({
         courses
       });
     } catch (err) {

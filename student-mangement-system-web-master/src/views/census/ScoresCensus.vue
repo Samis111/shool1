@@ -1,111 +1,223 @@
 <template>
   <el-card class="box-card">
-    <!--头部 start-->
     <template #header>
       <div class="card-header">
         <h3>
-          <el-icon style="margin-right: 10px;"><Histogram /></el-icon>班级科目成绩统计
+          <el-icon style="margin-right: 10px;"><Histogram /></el-icon>课程成绩统计
         </h3>
 
-        <!--搜索区域 start-->
         <div class="card-search">
-          <el-row :gutter="8">
-            <el-col :span="12">
-              <el-select v-model="gradeClassId" placeholder="请选择班级" style="width: 100%;" @change="changeCourse">
-                <el-option v-for="item in gradeClassOptions" :key="item.id" :label="item.name" :value="item.id" />
-              </el-select>
-            </el-col>
-            <el-col :span="12">
-              <el-select v-model="courseId" placeholder="请选择科目" style="width: 100%;" @change="changeCourse">
-                <el-option v-for="item in courseOptions" :key="item.id" :label="item.name" :value="item.id" />
-              </el-select>
-            </el-col>
-          </el-row>
+          <el-select v-model="courseId" placeholder="请选择科目" style="width: 100%;" @change="changeCourse">
+            <el-option v-for="item in courseOptions" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
         </div>
-        <!--搜索区域 end-->
-
       </div>
     </template>
-    <!--头部 end-->
-    <!--echarts start-->
-    <ScoreCensusPie :seriesData="seriesData" :legendData="legendData" height="400px" width="100%" id="pie"/>
-    <!--echarts end-->
+
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <div ref="pieChart" style="width: 100%; height: 400px;"></div>
+      </div>
+      <div class="chart-wrapper">
+        <div ref="barChart" style="width: 100%; height: 400px;"></div>
+      </div>
+    </div>
   </el-card>
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted } from 'vue'
-// 定义班级下拉选择项
-import {gradeClassListApi} from "../../api/student/student";
-import {getAllCourseListApi} from "../../api/teacher/teacher";
-import ScoreCensusPie from './components/ScoreCensusPie.vue'
-import {getScoreCensusApi} from "../../api/census/census";
-// 定义班级ID
-const gradeClassId = ref()
-const gradeClassOptions = ref<object[]>([])
-// 获取所有班级列表
-async function gradeClassList() {
-  try {
-    const { data } = await gradeClassListApi()
-    if (data.status === 200) {
-      gradeClassOptions.value = data.result
-    }
-  } catch (e) {
-    console.log(e)
-  }
-}
-// 定义科目ID
+import { ref, onMounted } from 'vue'
+import { getCourseListApi } from "../../api/course/course"
+import { getScoreCensusApi } from "../../api/census/census"
+import * as echarts from 'echarts'
+import { ElMessage } from 'element-plus'
+
+// 定义科目ID和选项
 const courseId = ref()
-// 定义课程下拉选择项
-const courseOptions = ref<object[]>([])
+const courseOptions = ref<Array<{id: number, name: string}>>([])
+
+// 图表实例
+const pieChart = ref()
+const barChart = ref()
+let pieChartInstance: echarts.ECharts | null = null
+let barChartInstance: echarts.ECharts | null = null
+
 // 获取所有课程列表
 async function getAllCourseList() {
   try {
-    const { data } = await getAllCourseListApi()
-    if (data.status === 200) {
-      courseOptions.value = data.result
+    const { data } = await getCourseListApi({
+      pageIndex: 1,
+      pageSize: 1000
+    })
+    if (data.code === 200) {
+      courseOptions.value = data.data.records.map(item => ({
+        id: item.courseId,
+        name: item.courseName
+      }))
     }
   } catch (e) {
     console.log(e)
   }
 }
 
-const legendData = ref(["优","良","一般","较差","不及格"])
-const seriesData = ref([])
-
-// 统计班级科目成绩
-const getScoreCensus = async ()=> {
-  const { data } = await getScoreCensusApi(courseId.value,gradeClassId.value)
-
-  if(data.status===200){
-    seriesData.value = data.result
-    console.log(`data.result is: ${data.result}`)
+// 统计课程成绩
+const getScoreCensus = async () => {
+  if (!courseId.value) return
+  
+  try {
+    const { data } = await getScoreCensusApi(courseId.value)
+    if (data.code === 200) {
+      // 处理返回的数据
+      const chartData = data.data.map((item: any) => ({
+        gradeLevel: item.gradeLevel,
+        count: item.count,
+        percentage: item.percentage
+      }))
+      
+      // 更新图表
+      initPieChart(chartData)
+      initBarChart(chartData)
+    } else {
+      ElMessage.error(data.message || '获取数据失败')
+    }
+  } catch (error) {
+    console.error('获取成绩统计失败：', error)
+    ElMessage.error('获取成绩统计失败，请重试')
   }
-
 }
 
-const changeCourse = async ()=> {
-  if(gradeClassId.value!==null&&gradeClassId.value!==""&&courseId.value!==null&&courseId.value!==""){
-    await getScoreCensus()
+// 初始化饼图
+const initPieChart = (data: any[]) => {
+  if (!pieChartInstance) {
+    pieChartInstance = echarts.init(pieChart.value)
   }
+
+  const option = {
+    title: {
+      text: '成绩分布',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c}人 ({d}%)'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+      data: data.map(item => item.gradeLevel)
+    },
+    series: [
+      {
+        name: '成绩分布',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '20',
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: data.map(item => ({
+          value: item.count,
+          name: item.gradeLevel,
+          percentage: item.percentage
+        }))
+      }
+    ]
+  }
+
+  pieChartInstance.setOption(option)
 }
 
-//挂载后加载数据
-onMounted(() => {
-  getAllCourseList()
-  gradeClassList()
+// 初始化柱状图
+const initBarChart = (data: any[]) => {
+  if (!barChartInstance) {
+    barChartInstance = echarts.init(barChart.value)
+  }
+
+  const option = {
+    title: {
+      text: '成绩分布',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      formatter: function(params: any) {
+        const item = params[0]
+        return `${item.name}<br/>人数：${item.value}人<br/>占比：${data[item.dataIndex].percentage.toFixed(1)}%`
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: data.map(item => item.gradeLevel)
+    },
+    yAxis: {
+      type: 'value',
+      name: '人数'
+    },
+    series: [
+      {
+        data: data.map(item => item.count),
+        type: 'bar',
+        showBackground: true,
+        backgroundStyle: {
+          color: 'rgba(180, 180, 180, 0.2)'
+        },
+        itemStyle: {
+          color: function(params: any) {
+            const colors = ['#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272']
+            return colors[params.dataIndex]
+          }
+        }
+      }
+    ]
+  }
+
+  barChartInstance.setOption(option)
+}
+
+const changeCourse = () => {
+  getScoreCensus()
+}
+
+// 监听窗口大小变化
+window.addEventListener('resize', () => {
+  pieChartInstance?.resize()
+  barChartInstance?.resize()
 })
 
+// 组件挂载后加载数据
+onMounted(() => {
+  getAllCourseList()
+})
 </script>
 
 <style scoped>
 .card-header {
-  display: flex; /* 弹性布局 */
-  justify-content: space-between; /*内容对齐方式 */
-  align-items: center; /*设置或检索弹性盒子元素在侧轴（纵轴）方向上的对齐方式*/
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
 .card-header h3 {
-  display: inline-flex; /*行内块元素*/
+  display: inline-flex;
   justify-content: center;
   align-items: center;
 }
@@ -115,17 +227,24 @@ onMounted(() => {
   color: #178557;
 }
 
-.text {
-  font-size: 14px;
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
 }
 
-.item {
-  margin-bottom: 18px;
+.chart-wrapper {
+  flex: 1;
+  min-width: 300px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
 .el-card {
   border-radius: 0px;
   border: none;
 }
-
 </style>

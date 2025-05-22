@@ -1,26 +1,18 @@
-<view class="container">
-  <view class="logo-section">
-    <image class="logo" src="/static/images/logo.png" mode="aspectFit"></image>
-    <text class="app-name">学生管理系统</text>
-  </view>
-
-  <view class="login-section">
-    <view class="welcome-text">欢迎使用</view>
-    <view class="login-box">
-      <button class="wechat-login-btn" open-type="getUserInfo" bindtap="handleWechatLogin">
-        <image class="wechat-icon" src="/static/images/wechat.png" mode="aspectFit"></image>
-        <text>微信一键登录</text>
-      </button>
-
-      <button class="phone-login-btn" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">
-        <image class="phone-icon" src="/static/images/phone.png" mode="aspectFit"></image>
-        <text>手机号快捷登录</text>
-      </button>
+<view class="login-container">
+  <view class="login-box">
+    <view class="title">学生管理系统</view>
+    <view class="logo-area">
+      <image class="logo" src="/static/images/logo.png" mode="aspectFit"></image>
     </view>
-  </view>
-
-  <view class="privacy-policy">
-    <text>登录即表示同意</text>
-    <text class="link" bindtap="showPrivacyPolicy">《用户协议和隐私政策》</text>
+    <view class="login-desc">申请获取以下权限</view>
+    <view class="auth-desc">获得您的公开信息（昵称、头像等）</view>
+    <button 
+      class="wechat-login-btn" 
+      bindtap="handleWechatLogin"
+      type="primary"
+    >
+      <image class="wechat-icon" src="/static/images/wechat.png" mode="aspectFit"></image>
+      微信一键登录
+    </button>
   </view>
 </view> 

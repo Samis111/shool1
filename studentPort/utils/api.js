@@ -1,5 +1,5 @@
 // API基础URL
-const BASE_URL = 'http://localhost:8080';  // 修改为实际的后端地址
+const BASE_URL = 'http://localhost:8082';  // 修改为实际的后端地址
 
 
 // 添加请求拦截器
