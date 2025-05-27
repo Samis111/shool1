@@ -106,11 +106,11 @@ public class scoresController {
      */
     @GetMapping("/census")
     public Result getScoreCensus(@RequestParam Integer courseId) {
-        try {
+//        try {
             List<Scores> censusData = scoresService.getScoreCensus(courseId);
             return Result.ok(censusData);
-        } catch (Exception e) {
-            return Result.fail("获取成绩统计失败：" + e.getMessage());
-        }
+//        } catch (Exception e) {
+//            return Result.fail("获取成绩统计失败：" + e.getMessage());
+//        }
     }
 }

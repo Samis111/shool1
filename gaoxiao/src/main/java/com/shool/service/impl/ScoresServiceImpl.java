@@ -18,7 +18,56 @@ import java.util.List;
 public class ScoresServiceImpl extends ServiceImpl<ScoresMapper, Scores>
     implements ScoresService{
 
-    @Override
+//    @Override
+//    public List<Scores> getScoreCensus(Integer courseId) {
+//        // 查询指定课程的所有成绩
+//        LambdaQueryWrapper<Scores> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(Scores::getCourseId, courseId);
+//        List<Scores> scores = this.list(wrapper);
+//
+//        // 统计各等级成绩
+//        List<Scores> censusList = new ArrayList<>();
+//        int total = scores.size();
+//
+//        // 定义成绩等级
+//        String[] levels = {"优", "良", "一般", "较差", "不及格"};
+//        double[] thresholds = {90, 80, 70, 60, 0};
+//
+//        for (int i = 0; i < levels.length; i++) {
+//            Scores census = new Scores();
+//            census.setGradeLevel(levels[i]);
+//
+//            // 统计该等级的人数
+//            int count = 0;
+//            for (Scores score : scores) {
+//                if (score.getScore() != null) {
+//                    double scoreValue = score.getScore().doubleValue();
+//                    if (i == levels.length - 1) {
+//                        if (scoreValue < thresholds[i]) {
+//                            count++;
+//                        }
+//                    } else {
+//                        if (scoreValue >= thresholds[i] && scoreValue < thresholds[i - 1]) {
+//                            count++;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            census.setCount(count);
+//            // 计算百分比
+//            if (total > 0) {
+//                census.setPercentage((double) count / total * 100);
+//            } else {
+//                census.setPercentage(0.0);
+//            }
+//
+//            censusList.add(census);
+//        }
+//
+//        return censusList;
+//    }
+
     public List<Scores> getScoreCensus(Integer courseId) {
         // 查询指定课程的所有成绩
         LambdaQueryWrapper<Scores> wrapper = new LambdaQueryWrapper<>();
@@ -28,45 +77,55 @@ public class ScoresServiceImpl extends ServiceImpl<ScoresMapper, Scores>
         // 统计各等级成绩
         List<Scores> censusList = new ArrayList<>();
         int total = scores.size();
-        
-        // 定义成绩等级
+
+        // 定义成绩等级和对应的分数区间
         String[] levels = {"优", "良", "一般", "较差", "不及格"};
         double[] thresholds = {90, 80, 70, 60, 0};
-        
+
         for (int i = 0; i < levels.length; i++) {
             Scores census = new Scores();
             census.setGradeLevel(levels[i]);
-            
+
             // 统计该等级的人数
             int count = 0;
             for (Scores score : scores) {
                 if (score.getScore() != null) {
                     double scoreValue = score.getScore().doubleValue();
-                    if (i == levels.length - 1) {
-                        if (scoreValue < thresholds[i]) {
+
+                    // 优化条件判断逻辑
+                    if (i == 0) {
+                        // 优: >=90
+                        if (scoreValue >= thresholds[i]) {
+                            count++;
+                        }
+                    } else if (i == levels.length - 1) {
+                        // 不及格: <60
+                        if (scoreValue < thresholds[i-1]) {
                             count++;
                         }
                     } else {
-                        if (scoreValue >= thresholds[i] && scoreValue < thresholds[i - 1]) {
+                        // 其他等级: [下限, 上限)
+                        if (scoreValue >= thresholds[i] && scoreValue < thresholds[i-1]) {
                             count++;
                         }
                     }
                 }
             }
-            
+
             census.setCount(count);
-            // 计算百分比
+            // 计算百分比，保留两位小数
             if (total > 0) {
-                census.setPercentage((double) count / total * 100);
+                census.setPercentage((double) Math.round((double) count / total * 10000) / 100);
             } else {
                 census.setPercentage(0.0);
             }
-            
+
             censusList.add(census);
         }
-        
+
         return censusList;
     }
+
 }
 
 
